@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BasicEnemyLogic : MonoBehaviour
@@ -15,6 +16,8 @@ public class BasicEnemyLogic : MonoBehaviour
     public int speed;
     public bool canMove = true;
     public bool canAttack;
+
+    public List<int> resources;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -35,5 +38,24 @@ public class BasicEnemyLogic : MonoBehaviour
     void attack()
     {
         
+    }
+
+    public void OnTriggerEnter(UnityEngine.Collider col)
+    {
+        if(col.gameObject.tag == "Bullet")
+        {
+            health -= col.gameObject.GetComponent<BulletMove>().damage;
+            Destroy(col.gameObject);
+
+            if(health <= 0)
+            {
+                for(int i = 0; i < 3; i++)
+                {
+                    GameData.Instance.resources[i] += resources[i];
+                }
+
+                Destroy(gameObject);
+            }
+        }
     }
 }

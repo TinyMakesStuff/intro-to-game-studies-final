@@ -1,13 +1,20 @@
+using System.Collections.Generic;
+using Microsoft.Unity.VisualStudio.Editor;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
     // Vars
     public bool canMove = true;
     public bool canAttack = true;
+    public bool canBuild = true;
     public int health = 100;
     public int maxHealth = 100;
     public int speed = 10;
+    public int damage = 2;
     
 
     // Attacking specific vars
@@ -17,10 +24,16 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask enemyLayer;
     public GameObject bullet;
 
+    // Hotbar and Building vars
+    public int selected = 0;
+    public List<UnityEngine.UI.Image> hotbarIcons;
+    public List<GameObject> placeables;
+    public Camera mainCamera;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        GameData.Instance.startGame();
     }
 
     // Update is called once per frame
@@ -47,8 +60,15 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
         }
+
+        if(canBuild)
+        {
+            moveHotbar();
+            place();
+        }
     }
 
+    // ATTACKING FUNCTIONS
     Transform getClosestEnemy()
     {
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, range, enemyLayer);
@@ -73,12 +93,80 @@ public class PlayerMovement : MonoBehaviour
 
     void attack(Transform target)
     {
-        // then, spawn a projectile
         // Debug.Log(target);
         GameObject newBullet = Instantiate(bullet);
         newBullet.transform.position = transform.position;
 
         newBullet.GetComponent<BulletMove>().target = target;
         newBullet.GetComponent<BulletMove>().life = 1f;
+        newBullet.GetComponent<BulletMove>().damage = damage;
+    }
+
+    // BUILDING FUNTIONS
+    void moveHotbar()
+    {
+        if(Mouse.current.scroll.ReadValue().y > 0)
+        {
+            hotbarIcons[selected].color = new Color(hotbarIcons[selected].color.r, hotbarIcons[selected].color.b, hotbarIcons[selected].color.g, 0.5f);
+            selected++;
+
+            if(selected > 2)
+            {
+                selected = 0;
+            }
+
+            hotbarIcons[selected].color = new Color(hotbarIcons[selected].color.r, hotbarIcons[selected].color.b, hotbarIcons[selected].color.g, 1);
+        }
+
+        if(Mouse.current.scroll.ReadValue().y < 0)
+        {
+            hotbarIcons[selected].color = new Color(hotbarIcons[selected].color.r, hotbarIcons[selected].color.b, hotbarIcons[selected].color.g, 0.5f);
+            selected--;
+
+            if(selected < 0)
+            {
+                selected = 2;
+            }
+
+            hotbarIcons[selected].color = new Color(hotbarIcons[selected].color.r, hotbarIcons[selected].color.b, hotbarIcons[selected].color.g, 1);
+        }
+    }
+
+    void place()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit))
+            {
+                GameObject clickedObject = hit.collider.gameObject;
+                Debug.Log("HIT");
+                
+                if(clickedObject.tag == "clickable")
+                {
+                    Vector3 position = hit.point;
+                    Placeable on = placeables[selected].GetComponent<PlaceableWrapper>().placeable;
+                    
+                    if(on.type == "turret")
+                    {
+                        if(on.cost[0] <= GameData.Instance.resources[0] && on.cost[1] <= GameData.Instance.resources[1] && on.cost[2] <= GameData.Instance.resources[2])
+                        {
+                            for(int i = 0; i < 3; i++)
+                            {
+                                GameData.Instance.resources[i] -= on.cost[i];
+                            }
+
+                            GameObject newTurret = GameObject.Instantiate(placeables[selected]);
+                            newTurret.transform.position = position;
+                        }
+                    } else
+                    {
+                        
+                    }
+                }
+            }
+        }
     }
 }

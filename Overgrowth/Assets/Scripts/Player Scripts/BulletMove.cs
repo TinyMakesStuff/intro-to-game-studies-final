@@ -6,6 +6,7 @@ public class BulletMove : MonoBehaviour
     public Transform target;
     public float life;
     public int damage;
+    public int speed;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -16,7 +17,7 @@ public class BulletMove : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.Translate(Vector3.forward * 5 * Time.deltaTime);
+        transform.Translate(Vector3.forward * speed * Time.deltaTime);
     }
 
     IEnumerator timeToDeath()

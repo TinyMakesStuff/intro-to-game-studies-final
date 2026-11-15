@@ -36,7 +36,10 @@ public class GameData : MonoBehaviour
     {
         round = 0;
         money = 0;
-        resources = new List<int>(3);
+        for(int i = 0; i < 3; i++)
+        {
+            resources[i] = 0;
+        }
     }
 
     // Book keeping
