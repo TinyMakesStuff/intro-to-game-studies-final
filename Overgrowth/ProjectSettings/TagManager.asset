@@ -7,6 +7,8 @@ TagManager:
   - Enemy
   - clickable
   - Bullet
+  - player
+  - gunTurret
   layers:
   - Default
   - TransparentFX

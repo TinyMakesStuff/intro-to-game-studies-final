@@ -18,6 +18,7 @@ public class BasicEnemyLogic : MonoBehaviour
     public bool canAttack;
 
     public List<int> resources;
+    public int money;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -52,6 +53,7 @@ public class BasicEnemyLogic : MonoBehaviour
                 for(int i = 0; i < 3; i++)
                 {
                     GameData.Instance.resources[i] += resources[i];
+                    GameData.Instance.money += money;
                 }
 
                 Destroy(gameObject);

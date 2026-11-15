@@ -18,6 +18,10 @@ public class GameData : MonoBehaviour
     public List<int> resources = new List<int>(3);
     public int money;
 
+    public List<int> plantCount;
+
+    public PlayerMovement player;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -40,11 +44,36 @@ public class GameData : MonoBehaviour
         {
             resources[i] = 0;
         }
+
+        for(int i = 0; i < 4; i++)
+        {
+            plantCount[i] = 0;
+        }
+
+        player = GameObject.Find("PlayerSprite").GetComponent<PlayerMovement>();
     }
 
     // Book keeping
     public void addToInventory(int index, int amount)
     {
         resources[index] += amount;
+    }
+
+    public void addPlant(int index, PlantData pd)
+    {
+        plantCount[index]++;
+        if(pd.effect == "attack")
+        {
+            player.damage += pd.effectAmount;
+        }
+    }
+
+    public void removePlant(int index, PlantData pd)
+    {
+        plantCount[index]--;
+        if(pd.effect == "attack")
+        {
+            player.damage -= pd.effectAmount;
+        }
     }
 }

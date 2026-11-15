@@ -34,6 +34,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         GameData.Instance.startGame();
+        GameData.Instance.addPlant(0, placeables[1].GetComponent<PlaceableWrapper>().plantData);
     }
 
     // Update is called once per frame
@@ -110,7 +111,7 @@ public class PlayerMovement : MonoBehaviour
             hotbarIcons[selected].color = new Color(hotbarIcons[selected].color.r, hotbarIcons[selected].color.b, hotbarIcons[selected].color.g, 0.5f);
             selected++;
 
-            if(selected > 2)
+            if(selected > 1)
             {
                 selected = 0;
             }
@@ -125,7 +126,7 @@ public class PlayerMovement : MonoBehaviour
 
             if(selected < 0)
             {
-                selected = 2;
+                selected = 1;
             }
 
             hotbarIcons[selected].color = new Color(hotbarIcons[selected].color.r, hotbarIcons[selected].color.b, hotbarIcons[selected].color.g, 1);
@@ -149,6 +150,7 @@ public class PlayerMovement : MonoBehaviour
                     Vector3 position = hit.point;
                     Placeable on = placeables[selected].GetComponent<PlaceableWrapper>().placeable;
                     
+                    
                     if(on.type == "turret")
                     {
                         if(on.cost[0] <= GameData.Instance.resources[0] && on.cost[1] <= GameData.Instance.resources[1] && on.cost[2] <= GameData.Instance.resources[2])
@@ -163,7 +165,15 @@ public class PlayerMovement : MonoBehaviour
                         }
                     } else
                     {
-                        
+                        if(GameData.Instance.plantCount[on.cost[0]] > 0)
+                        {
+                            PlantData pd = placeables[selected].GetComponent<PlaceableWrapper>().plantData;
+
+                            // Remove personal buff, place plant
+                            GameData.Instance.removePlant(pd.index, pd);
+                            GameObject newPlant = GameObject.Instantiate(placeables[selected]);
+                            newPlant.transform.position = position;
+                        }
                     }
                 }
             }
