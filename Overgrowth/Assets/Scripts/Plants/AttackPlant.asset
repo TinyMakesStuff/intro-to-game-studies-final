@@ -13,5 +13,8 @@ MonoBehaviour:
   m_Name: AttackPlant
   m_EditorClassIdentifier: 
   index: 0
+  plant: Attack Plant
   effect: attack
   effectAmount: 2
+  cost: 10
+  plantIcon: {fileID: 0}

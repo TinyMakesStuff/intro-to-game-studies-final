@@ -35,6 +35,7 @@ public class PlayerMovement : MonoBehaviour
     {
         GameData.Instance.startGame();
         GameData.Instance.addPlant(0, placeables[1].GetComponent<PlaceableWrapper>().plantData);
+        RoundManager.Instance.startRound(30);
     }
 
     // Update is called once per frame
