@@ -8,17 +8,23 @@ public class RoundManager : MonoBehaviour
 {
     public static RoundManager Instance;
     // Basic book keeping
+    [Header("BOOK KEEPING")]
     public int roundOn;
     public List<PlantData> plantInfo;
+    public PlayerMovement playerMovement;
 
     // Timer stuff
+    [Header("TIMER")]
     public int remainingTime;
     public TextMeshProUGUI timerText;
 
     // Round data
-    public List<int> roundLengths;
+    [Header("ROUNDS")]
+    public List<Round> rounds;
+    public List<GameObject> curEnemies;
 
     // Shop vars
+    [Header("SHOP VARIABLES")]
     public GameObject shopPanel;
     public List<int> costs;
     public List<UnityEngine.UI.Image> images;
@@ -52,15 +58,19 @@ public class RoundManager : MonoBehaviour
         
     }
 
-    public void startRound(int length)
+    public void startRound()
     {
-        remainingTime = length;
-        StartCoroutine(roundTimer(length));
+        remainingTime = rounds[roundOn].roundLength;
+        StartCoroutine(roundTimer(rounds[roundOn].roundLength));
+        StartCoroutine(spawnBlobs());
     }
 
     public void goToShop()
     {
         shopPanel.SetActive(true);
+
+        playerMovement.canBuild = false;
+        playerMovement.canMove = false;
 
         for(int i = 0; i < images.Count; i++)
         {
@@ -97,15 +107,64 @@ public class RoundManager : MonoBehaviour
             timerText.text = "" + remainingTime;
         }
 
-        roundOn++;
+        // roundOn++;    make sure to reenable later
+        // TODO: Add code to end the game HERE
+        clearEnemies();
         goToShop();
+    }
+
+    public IEnumerator spawnBlobs()
+    {
+        Round cur = rounds[roundOn];
+
+        for(int i = 0; i < cur.blobCount; i++)
+        {
+            Blob curBlob = cur.blobs[i];
+
+            for(int j = 0; j < curBlob.typeCount; j++)
+            {
+                if(curBlob.spawnType[j] == "scatter")
+                {
+                    // TODO: add spawning code for scattering them randomly around the map
+                    for(int k = 0; k < curBlob.amount[j]; k++)
+                    {
+                        GameObject newEnemy = Instantiate(curBlob.enemies[j]);
+                        newEnemy.transform.position = new Vector3(Random.Range(-60, 8), 1, Random.Range(-40, 5));
+                        curEnemies.Add(newEnemy);
+                    }
+                } else if(curBlob.spawnType[j] == "point")
+                {
+                    // TODO: add spawning code for spawning them around a set point
+                    for(int k = 0; k < curBlob.amount[j]; k++)
+                    {
+                        GameObject newEnemy = Instantiate(curBlob.enemies[j]);
+                        newEnemy.transform.position = new Vector3(Random.Range(curBlob.xCenter[j] - 3, curBlob.xCenter[j] + 3), 1, Random.Range(curBlob.zCenter[j] - 3, curBlob.xCenter[j] + 3));
+                        curEnemies.Add(newEnemy);
+                    }
+                }
+            }
+
+            yield return new WaitForSeconds(cur.blobLengths[i]);
+        }
+    }
+
+    public void clearEnemies()
+    {
+        for(int i = 0; i < curEnemies.Count; i++)
+        {
+            Destroy(curEnemies[i]);
+        }
+
+        curEnemies = new List<GameObject>();
     }
 
     // SHOP BUTTON FUNCTIONS
     public void exitShop()
     {
+        playerMovement.canBuild = true;
+        playerMovement.canMove = true;
         shopPanel.SetActive(false);
-        startRound(10);
+        startRound();
     }
 
     public void buyItem(int button)

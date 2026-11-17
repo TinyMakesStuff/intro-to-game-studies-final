@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.Unity.VisualStudio.Editor;
+using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -15,6 +16,8 @@ public class PlayerMovement : MonoBehaviour
     public int maxHealth = 100;
     public int speed = 10;
     public int damage = 2;
+    public Animator animator;
+    public SpriteRenderer spriteRenderer;
     
 
     // Attacking specific vars
@@ -22,6 +25,7 @@ public class PlayerMovement : MonoBehaviour
     public float coolDownTimer = 0;
     public int range = 10;
     public LayerMask enemyLayer;
+    public LayerMask goodLayer;
     public GameObject bullet;
 
     // Hotbar and Building vars
@@ -35,7 +39,7 @@ public class PlayerMovement : MonoBehaviour
     {
         GameData.Instance.startGame();
         GameData.Instance.addPlant(0, placeables[1].GetComponent<PlaceableWrapper>().plantData);
-        RoundManager.Instance.startRound(30);
+        RoundManager.Instance.startRound();
     }
 
     // Update is called once per frame
@@ -44,6 +48,22 @@ public class PlayerMovement : MonoBehaviour
         if(canMove) {
             float hor = Input.GetAxis("Horizontal");
             float ver = Input.GetAxis("Vertical");
+
+            if(hor == 0 && ver == 0)
+            {
+                animator.SetBool("IsWalking", false);
+            } else
+            {
+                animator.SetBool("IsWalking", true);
+
+                if(hor < 0)
+                {
+                    spriteRenderer.flipX = false;
+                } else
+                {
+                    spriteRenderer.flipX = true;
+                }
+            }
 
             Vector3 move = new Vector3(hor, ver, 0);
             transform.Translate(move * -speed * Time.deltaTime);
@@ -141,7 +161,7 @@ public class PlayerMovement : MonoBehaviour
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
-            if (Physics.Raycast(ray, out hit))
+            if (Physics.Raycast(ray, out hit, math.INFINITY, ~goodLayer))
             {
                 GameObject clickedObject = hit.collider.gameObject;
                 Debug.Log("HIT");
@@ -162,7 +182,7 @@ public class PlayerMovement : MonoBehaviour
                             }
 
                             GameObject newTurret = GameObject.Instantiate(placeables[selected]);
-                            newTurret.transform.position = position;
+                            newTurret.transform.position = new Vector3(position.x, 1, position.z);
                         }
                     } else
                     {

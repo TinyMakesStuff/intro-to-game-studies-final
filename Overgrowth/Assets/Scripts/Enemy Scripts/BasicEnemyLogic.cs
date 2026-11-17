@@ -24,6 +24,7 @@ public class BasicEnemyLogic : MonoBehaviour
 
     public int range;
     public LayerMask goodLayer;
+    public SpriteRenderer spriteRenderer;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -62,6 +63,14 @@ public class BasicEnemyLogic : MonoBehaviour
                     attack();
                     attackTimer = attackCooldown;
                 }
+            }
+
+            if(player.transform.position.x > transform.position.x)
+            {
+                spriteRenderer.flipX = true;
+            } else
+            {
+                spriteRenderer.flipX = false;
             }
         }
     }
