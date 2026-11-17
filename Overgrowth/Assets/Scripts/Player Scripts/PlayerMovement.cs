@@ -193,7 +193,7 @@ public class PlayerMovement : MonoBehaviour
                             // Remove personal buff, place plant
                             GameData.Instance.removePlant(pd.index, pd);
                             GameObject newPlant = GameObject.Instantiate(placeables[selected]);
-                            newPlant.transform.position = position;
+                            newPlant.transform.position = new Vector3(position.x, 1, position.z);
                         }
                     }
                 }
