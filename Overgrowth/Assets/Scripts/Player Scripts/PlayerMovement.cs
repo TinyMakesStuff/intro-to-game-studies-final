@@ -18,7 +18,7 @@ public class PlayerMovement : MonoBehaviour
     public int damage = 2;
     public Animator animator;
     public SpriteRenderer spriteRenderer;
-    
+    public Rigidbody rb;
 
     // Attacking specific vars
     public float attackCoolDown = 2f;
@@ -42,8 +42,7 @@ public class PlayerMovement : MonoBehaviour
         RoundManager.Instance.startRound();
     }
 
-    // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if(canMove) {
             float hor = Input.GetAxis("Horizontal");
@@ -65,9 +64,17 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
 
-            Vector3 move = new Vector3(hor, ver, 0);
-            transform.Translate(move * -speed * Time.deltaTime);
+            Vector3 move = new Vector3(hor, 0, ver);
+            // transform.Translate(move * -speed * Time.deltaTime);
+            // rb.MovePosition(move * -speed * Time.deltaTime);
+            rb.linearVelocity = (move * -speed * Time.deltaTime);
         }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
 
         if(canAttack)
         {
