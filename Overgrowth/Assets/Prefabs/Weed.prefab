@@ -223,7 +223,7 @@ MonoBehaviour:
   attackTimer: 0
   attackCooldown: 2
   resources: 010000000100000001000000
-  money: 2
+  money: 3
   range: 15
   goodLayer:
     serializedVersion: 2

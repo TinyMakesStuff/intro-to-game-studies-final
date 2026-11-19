@@ -125,9 +125,10 @@ public class BasicEnemyLogic : MonoBehaviour
                 for(int i = 0; i < 3; i++)
                 {
                     GameData.Instance.resources[i] += resources[i];
-                    GameData.Instance.money += money;
+                    
                 }
 
+                GameData.Instance.money += money;
                 player.GetComponent<PlayerMovement>().updateInventory();
                 Destroy(gameObject);
             }
