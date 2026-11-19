@@ -232,7 +232,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   bullet: {fileID: 4296941584986100686, guid: 5703eb48490240c428b2075fe44f87da, type: 3}
-  attackCoolDown: 2
+  attackCoolDown: 1
   coolDownTimer: 0
   damage: 2
 --- !u!65 &9193366108058674713

@@ -14,7 +14,7 @@ public class GameData : MonoBehaviour
 
     // 0: Wood
     // 1: Petals
-    // 2: Grass
+    // 2: Thornes
     public List<int> resources = new List<int>(3);
     public int money;
 

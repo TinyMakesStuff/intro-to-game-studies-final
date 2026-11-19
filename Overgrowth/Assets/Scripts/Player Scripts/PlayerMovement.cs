@@ -1,9 +1,11 @@
 using System.Collections.Generic;
-using Microsoft.Unity.VisualStudio.Editor;
+
+using TMPro;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
@@ -33,13 +35,16 @@ public class PlayerMovement : MonoBehaviour
     public List<UnityEngine.UI.Image> hotbarIcons;
     public List<GameObject> placeables;
     public Camera mainCamera;
+    public List<TextMeshProUGUI> inventoryText;
+    public TextMeshProUGUI healthText;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         GameData.Instance.startGame();
-        GameData.Instance.addPlant(0, placeables[1].GetComponent<PlaceableWrapper>().plantData);
+        // GameData.Instance.addPlant(0, placeables[1].GetComponent<PlaceableWrapper>().plantData);
         RoundManager.Instance.startRound();
+        updateInventory();
     }
 
     void FixedUpdate()
@@ -68,14 +73,15 @@ public class PlayerMovement : MonoBehaviour
             // transform.Translate(move * -speed * Time.deltaTime);
             // rb.MovePosition(move * -speed * Time.deltaTime);
             rb.linearVelocity = (move * -speed * Time.deltaTime);
+        } else
+        {
+            rb.linearVelocity = new Vector3(0, 0, 0);
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-
         if(canAttack)
         {
             coolDownTimer -= Time.deltaTime;
@@ -95,6 +101,13 @@ public class PlayerMovement : MonoBehaviour
             moveHotbar();
             place();
         }
+
+        if(health <= 0)
+        {
+            SceneManager.LoadScene(0);
+        }
+
+        healthText.text = "Health: " + health;
     }
 
     // ATTACKING FUNCTIONS
@@ -161,6 +174,15 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    public void updateInventory()
+    {
+        // TODO: Fix this as UI changes
+        inventoryText[0].text = "Wood - " + GameData.Instance.resources[0];
+        inventoryText[1].text = "Thornes - " + GameData.Instance.resources[2];
+        inventoryText[2].text = "Petals - " + GameData.Instance.resources[1];
+        inventoryText[3].text = "- " + GameData.Instance.plantCount[0];
+    }
+
     void place()
     {
         if (Input.GetMouseButtonDown(0))
@@ -203,6 +225,8 @@ public class PlayerMovement : MonoBehaviour
                             newPlant.transform.position = new Vector3(position.x, 1, position.z);
                         }
                     }
+
+                    updateInventory();
                 }
             }
         }

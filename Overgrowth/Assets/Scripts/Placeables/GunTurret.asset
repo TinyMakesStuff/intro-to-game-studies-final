@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: GunTurret
   m_EditorClassIdentifier: 
   type: turret
-  cost: 010000000100000001000000
-  health: 0
+  cost: 030000000200000003000000
+  health: 10

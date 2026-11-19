@@ -216,14 +216,14 @@ MonoBehaviour:
   player: {fileID: 0}
   currentTarget: {fileID: 0}
   health: 10
-  damage: 2
+  damage: 1
   speed: 5
   canMove: 1
   canAttack: 0
   attackTimer: 0
-  attackCooldown: 1.5
-  resources: 0a0000000300000003000000
-  money: 12
+  attackCooldown: 2
+  resources: 010000000100000001000000
+  money: 2
   range: 15
   goodLayer:
     serializedVersion: 2

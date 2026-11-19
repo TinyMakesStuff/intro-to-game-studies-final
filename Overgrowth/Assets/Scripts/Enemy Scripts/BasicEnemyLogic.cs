@@ -128,6 +128,7 @@ public class BasicEnemyLogic : MonoBehaviour
                     GameData.Instance.money += money;
                 }
 
+                player.GetComponent<PlayerMovement>().updateInventory();
                 Destroy(gameObject);
             }
         }

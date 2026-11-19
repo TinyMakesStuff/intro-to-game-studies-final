@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.Unity.VisualStudio.Editor;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class RoundManager : MonoBehaviour
 {
@@ -33,6 +33,10 @@ public class RoundManager : MonoBehaviour
     public List<int> itemIndex;
     public List<int> amounts;
     public List<string> resourceNames;
+    public TextMeshProUGUI moneyText;
+    public List<Sprite> resourceIcons;
+    public List<Sprite> plantIcons;
+    public GameObject inventoryPanel;
 
 
     private void Awake()
@@ -68,9 +72,12 @@ public class RoundManager : MonoBehaviour
     public void goToShop()
     {
         shopPanel.SetActive(true);
+        inventoryPanel.SetActive(false);
 
         playerMovement.canBuild = false;
         playerMovement.canMove = false;
+
+        moneyText.text = "Gold: " + GameData.Instance.money;
 
         for(int i = 0; i < images.Count; i++)
         {
@@ -83,6 +90,8 @@ public class RoundManager : MonoBehaviour
                 costs[i] = plantInfo[itemIndex[i]].cost;
 
                 buttonText[i].text = plantInfo[itemIndex[i]].plant + " - " + costs[i] + " gold";
+                playerMovement.updateInventory();
+                images[i].sprite = plantIcons[itemIndex[i]];
             } else
             {
                 // is a resource
@@ -92,6 +101,8 @@ public class RoundManager : MonoBehaviour
                 costs[i] = amounts[i] * 2;
 
                 buttonText[i].text = amounts[i] + " " + resourceNames[itemIndex[i]] + " - " + costs[i] + " gold";
+                playerMovement.updateInventory();
+                images[i].sprite = resourceIcons[itemIndex[i]];
             }
         }
     }
@@ -107,7 +118,12 @@ public class RoundManager : MonoBehaviour
             timerText.text = "" + remainingTime;
         }
 
-        // roundOn++;    make sure to reenable later
+        roundOn++; 
+
+        if(roundOn >= 8)
+        {
+            SceneManager.LoadScene(0);
+        }
         // TODO: Add code to end the game HERE
         clearEnemies();
         goToShop();
@@ -164,6 +180,7 @@ public class RoundManager : MonoBehaviour
         playerMovement.canBuild = true;
         playerMovement.canMove = true;
         shopPanel.SetActive(false);
+        inventoryPanel.SetActive(true);
         startRound();
     }
 
@@ -181,5 +198,8 @@ public class RoundManager : MonoBehaviour
                 GameData.Instance.addToInventory(itemIndex[button], amounts[button]);
             }
         }
+
+        moneyText.text = "Gold: " + GameData.Instance.money;
+        playerMovement.updateInventory();
     }
 }
